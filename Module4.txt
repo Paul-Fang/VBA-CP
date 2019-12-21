@@ -1,0 +1,98 @@
+Attribute VB_Name = "Module4"
+Sub START_Click()
+
+Dim i As Integer
+Dim y As Integer
+Dim k As Integer
+Dim sd As Integer
+Dim l As Integer
+Dim month As String
+Dim newbook
+Dim partname As String
+Dim peoplename As String
+Dim peoplename2 As String
+Dim number As String
+Dim filename As String
+i = 2
+partname = ""
+peoplename = ""
+month = Worksheets("操作檔案").Cells(1, 2).Value
+filename = Worksheets("操作檔案").Cells(2, 2).Value
+sd = Worksheets("操作檔案").Cells(3, 2).Value
+
+Workbooks.Open "C:\Users\USER\Desktop\" & month & ".xls"
+Workbooks(month).Worksheets(1).Columns(6).Delete
+Workbooks(month).Worksheets(1).Columns(7).Delete
+Workbooks(month).Worksheets(1).Columns(8).Delete
+Workbooks(month).Worksheets(1).Columns(9).Delete
+Workbooks(month).Worksheets(1).Range("J:P").Delete
+Workbooks(month).Worksheets(1).Columns(11).Delete
+
+Do Until Workbooks(month).Worksheets(1).Cells(i, 2) = ""
+    l = 3 + sd
+    y = 3 + sd
+    k = i
+    Do While Workbooks(month).Worksheets(1).Cells(i, 2).Value = peoplename
+        Do While Workbooks(month).Worksheets(1).Cells(i, 2).Value = peoplename
+            y = y + 1
+            i = i + 1
+        Loop
+        Workbooks(month).Activate
+        Workbooks(month).Worksheets(1).Range(Cells(k, 2), Cells(i - 1, 9)).Copy
+        Workbooks(partname).Activate
+        Workbooks(partname).Worksheets(peoplename).Range("C" & l & ":J" & y - 1).PasteSpecial Paste:=xlPasteValues
+        Workbooks(partname).Worksheets(peoplename).Range("C41:C43").Value = ""
+        Workbooks(partname).Save
+    Loop
+    If Workbooks(month).Worksheets(1).Cells(i, 2) = Workbooks(month).Worksheets(1).Cells(i, 10) Then
+        Exit Do
+    End If
+    Do While Workbooks(month).Worksheets(1).Cells(i, 10).Value <> partname And Workbooks(month).Worksheets(1).Cells(i, 2).Value <> peoplename
+        Workbooks(month).Activate
+        partname = Workbooks(month).Worksheets(1).Cells(i, 10).Value
+        Workbooks.Open "C:\Users\USER\Desktop\" & filename & "\" & partname & ".xlsx"
+    Loop
+    Do While Workbooks(month).Worksheets(1).Cells(i, 2).Value <> peoplename
+        If checkname(Workbooks(month).Worksheets(1).Cells(i, 2).Value) Then
+            peoplename = Workbooks(month).Worksheets(1).Cells(i, 2).Value
+            If sd = 1 Then
+                Workbooks(partname).Worksheets(peoplename).Activate
+                Workbooks(partname).Worksheets(peoplename).Range("C4:J34").Value = ""
+                Workbooks(partname).Worksheets(peoplename).Range("C4:J34").Interior.color = xlNone
+            End If
+        Else
+            peoplename2 = Workbooks(month).Worksheets(1).Cells(i, 2).Value
+            number = Workbooks(month).Worksheets(1).Cells(i, 1).Value
+            Workbooks(partname).Activate
+            Workbooks(partname).Worksheets.Add(After:=Worksheets(peoplename)).name = peoplename2
+            ActiveSheet.Tab.ColorIndex = 5
+            Workbooks("薪資公式").Activate
+            Workbooks("薪資公式").Worksheets("月薪仔").Range("A:R").Copy
+            Workbooks(partname).Worksheets(peoplename2).Activate
+            Workbooks(partname).Worksheets(peoplename2).Range("A:R").Select
+            ActiveSheet.Paste
+            Workbooks(partname).Worksheets(peoplename2).Range("B4:B34").Value = partname
+            Workbooks(partname).Worksheets(peoplename2).Range("A3").Value = "員工姓名:" & peoplename2 & number
+            peoplename = peoplename2
+        End If
+    Loop
+Loop
+
+Workbooks("薪資公式").Save
+MsgBox "已完成"
+Workbooks(month).Close SaveChanges:=False
+Application.Quit
+
+End Sub
+Function checkname(strShtName As String, Optional strWbName As String) As Boolean
+    On Error Resume Next
+    If strWbName = "" Then
+        Set objWb = ActiveWorkbook
+    Else
+        Set objWb = Workbooks(strWbName)
+    End If
+    checkname = CBool(Not objWb.Sheets(strShtName) Is Nothing)
+    On Error GoTo 0
+End Function
+
+
