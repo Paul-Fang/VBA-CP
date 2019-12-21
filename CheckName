@@ -1,0 +1,10 @@
+Function checkname(strShtName As String, Optional strWbName As String) As Boolean
+    On Error Resume Next
+    If strWbName = "" Then
+        Set objWb = ActiveWorkbook
+    Else
+        Set objWb = Workbooks(strWbName)
+    End If
+    checkname = CBool(Not objWb.Sheets(strShtName) Is Nothing)
+    On Error GoTo 0
+End Function
